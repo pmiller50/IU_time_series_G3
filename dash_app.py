@@ -57,6 +57,8 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.LUX, dbc_css])
 
+app.title = "Salaries by education level"
+
 
 app.layout = html.Div(
     [
@@ -143,7 +145,7 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
         for edu_column_name in df.columns[edu_checklist].values:
             naive_forecast_values = naive_forecast(df[edu_column_name], forecast_year_slider)
 
-            print(f'Naive forecast values: {naive_forecast_values}')
+            # print(f'Naive forecast values: {naive_forecast_values}')
 
             # The dataframe has the latest year as the last row, so find the latest year as the starting point
             # to add new values
@@ -172,7 +174,18 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
             forecasts = round(loaded_model.forecast( forecast_year_slider))
 
-            print(f'forecasts: {forecasts}')
+            # Convert the forecasts index (which is Index of Timestamps) into a list of years as int
+            forecast_years = [timestamp.year for timestamp in forecasts.index]
+
+
+            fig.add_trace(
+                go.Scatter(
+                    x=forecast_years,
+                    y=forecasts.values,
+                    mode='lines',
+                    name=f'{edu_column_name}_{model_selection}_forecast'
+                )
+            )
 
 
     fig.update_layout(showlegend=True, 
