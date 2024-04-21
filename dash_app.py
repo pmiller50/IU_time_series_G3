@@ -1,4 +1,12 @@
 '''
+Indiana University Time Series Analysis Group Project
+
+# Group G3
+
+*   Paul Miller
+*   Dhyey Joshi
+*   Jui Ambikar
+
 To run:
 
 pip install dash
@@ -14,21 +22,41 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objs as go
 import pandas as pd
+import numpy as np
+import pickle
+from os.path import join
+
+from statsmodels.tsa.arima.model import ARIMA
 
 df = pd.read_csv('data/salary_clean.csv')
 
-print(df.info())
+# sort the dataframe by year so the most recent is last
+df.sort_values(by='year', inplace=True)
 
-# Load pickled models
+# Define names of target columns
+target_columns = ['high_school_salary', 'some_college_salary', 'bachelors_salary', 'adv_salary']
 
+# Load pickled models to a dictionary
+arima_models = {}
 
+for edu_column in target_columns:
+
+    with open(join("models", f"{edu_column}_ARIMA.pkl"), "rb") as f:
+        arima_models[edu_column] = pickle.load(f)
+
+    
+def naive_forecast(series, steps):
+    '''
+    Naive model
+    '''
+    return np.array([series.iloc[-1]] * steps)
+    
 
 # stylesheet with the .dbc class from dash-bootstrap-templates library
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.LUX, dbc_css])
 
-# dash.Dash(external_stylesheets=[dbc.themes.LUX])
 
 app.layout = html.Div(
     [
@@ -105,9 +133,46 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
     fig = px.line(df, x='year', y=df.columns[edu_checklist])
 
-    
-    # Call specified model with years selected
+    # Loop through an array of checked values and load the respective models.
+    # After loading, generate forecasts and plot
 
+    # If Naive selected then use function defined above
+    if model_selection == 'Naive':
+
+
+        for edu_column_name in df.columns[edu_checklist].values:
+            naive_forecast_values = naive_forecast(df[edu_column_name], forecast_year_slider)
+
+            print(f'Naive forecast values: {naive_forecast_values}')
+
+            # The dataframe has the latest year as the last row, so find the latest year as the starting point
+            # to add new values
+            last_year_in_data = df.iloc[-1]['year']
+
+            # create range for forecasted steps
+            added_years = range(last_year_in_data, last_year_in_data + forecast_year_slider)
+
+            fig.add_trace(
+                go.Scatter(
+                    x=list(added_years),
+                    y=naive_forecast_values,
+                    mode='lines',
+                    name=f'{edu_column_name}_naive_forecast'
+                )
+            )
+
+    else:
+        print(type(df.columns[edu_checklist].values))
+        for edu_column_name in df.columns[edu_checklist].values:
+            print (f'column_index: {edu_column_name}')
+
+            # Call specified model with years selected
+            # e.g. bachelors_salary_ARIMA.pkl
+            loaded_model = pickle.load(open(join('models', f'{edu_column_name}_{model_selection}.pkl.'), 'rb'))
+
+            forecasts = round(loaded_model.forecast( forecast_year_slider))
+
+            print(f'forecasts: {forecasts}')
 
 
     fig.update_layout(showlegend=True, 
