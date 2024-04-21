@@ -19,6 +19,10 @@ df = pd.read_csv('data/salary_clean.csv')
 
 print(df.info())
 
+# Load pickled models
+
+
+
 # stylesheet with the .dbc class from dash-bootstrap-templates library
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
@@ -101,9 +105,11 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
     fig = px.line(df, x='year', y=df.columns[edu_checklist])
 
-
-
     
+    # Call specified model with years selected
+
+
+
     fig.update_layout(showlegend=True, 
                 xaxis_title="Year",
                 yaxis_title="Average salary",
