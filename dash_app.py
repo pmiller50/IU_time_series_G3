@@ -37,12 +37,13 @@ df.sort_values(by='year', inplace=True)
 target_columns = ['high_school_salary', 'some_college_salary', 'bachelors_salary', 'adv_salary']
 
 # Load pickled models to a dictionary
-arima_models = {}
+# This code isn't used at the moment. We load the models dynamically every time which is not efficient.
+# arima_models = {}
 
-for edu_column in target_columns:
+# for edu_column in target_columns:
 
-    with open(join("models", f"{edu_column}_ARIMA.pkl"), "rb") as f:
-        arima_models[edu_column] = pickle.load(f)
+#     with open(join("models", f"{edu_column}_ARIMA.pkl"), "rb") as f:
+#         arima_models[edu_column] = pickle.load(f)
 
     
 def naive_forecast(series, steps):
@@ -86,20 +87,9 @@ app.layout = html.Div(
                                             template='plotly_dark').update_layout(
                                                     {'plot_bgcolor': 'rgba(0, 0, 0, 0)',
                                                         'paper_bgcolor': 'rgba(0, 0, 0, 0)'})
-                                                        ),
-
-                            dcc.Checklist(
-                                    id="checklist",
-                                    options=[
-                                        {"label": "Advanced degree", "value": 12},
-                                        {"label": "Bachelors degree", "value": 10},
-                                        {"label": "Some college", "value": 8},
-                                        {"label": "High school", "value": 6},
-                                    ],
-                                    labelStyle={"display": "inline","align-items": "center", "margin-right": "10px"},  
-                                    value=[12],
-                                    className="dbc"
-                                )  ] , width=8),                                                      
+                                        )
+                           ]
+                       )       ,                                     
 
 
                 dbc.Col( [ html.Br(), 
@@ -109,9 +99,26 @@ app.layout = html.Div(
                             value=5,
                             id='forecast_year_slider',
                             className="dbc"
-                                )
+                                ),
+
+                            html.Br(), 
+
+                            html.P( "Select highest education level attained."),                                                        
+
+                            dcc.Checklist(
+                                    id="checklist",
+                                    options=[
+                                        {"label": "Advanced degree", "value": 12},
+                                        {"label": "Bachelors degree", "value": 10},
+                                        {"label": "Some college", "value": 8},
+                                        {"label": "High school", "value": 6},
+                                    ],
+                                    labelStyle={"align-items": "center", "margin-right": "10px"},  
+                                    value=[12],
+                                    className="dbc"
+                                )                                      
                                 
-                        ]),
+                        ], width="auto"),
             ]
         ),
     ],
@@ -129,9 +136,9 @@ app.layout = html.Div(
 )
 def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
-    print (f'edu_checklist {edu_checklist}')
-    print (f'forecast_year_slider {forecast_year_slider}')
-    print (f'model_selection {model_selection}')
+    # print (f'edu_checklist {edu_checklist}')
+    # print (f'forecast_year_slider {forecast_year_slider}')
+    # print (f'model_selection {model_selection}')
 
     fig = px.line(df, x='year', y=df.columns[edu_checklist])
 
@@ -164,15 +171,16 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
             )
 
     else:
-        print(type(df.columns[edu_checklist].values))
+
         for edu_column_name in df.columns[edu_checklist].values:
-            print (f'column_index: {edu_column_name}')
 
             # Call specified model with years selected
             # e.g. bachelors_salary_ARIMA.pkl
             loaded_model = pickle.load(open(join('models', f'{edu_column_name}_{model_selection}.pkl.'), 'rb'))
 
             forecasts = round(loaded_model.forecast( forecast_year_slider))
+
+            # print(f'model_selection:{model_selection}, forecasts:{forecasts}')
 
             # Convert the forecasts index (which is Index of Timestamps) into a list of years as int
             forecast_years = [timestamp.year for timestamp in forecasts.index]
