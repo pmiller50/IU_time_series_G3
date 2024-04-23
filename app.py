@@ -45,6 +45,12 @@ target_columns = ['high_school_salary', 'some_college_salary', 'bachelors_salary
 #     with open(join("models", f"{edu_column}_ARIMA.pkl"), "rb") as f:
 #         arima_models[edu_column] = pickle.load(f)
 
+from pathlib import Path
+THIS_FOLDER = Path(__file__).parent.resolve()
+
+# print(f'THIS_FOLDER: {THIS_FOLDER}')
+# my_file = THIS_FOLDER / "myfile.txt"
+
     
 def naive_forecast(series, steps):
     '''
@@ -77,7 +83,7 @@ app.layout = html.Div(
                 ), width="auto")),
                 
 
-        dbc.Row(dbc.Col(dcc.Dropdown(["Naive", "ARIMA", "SARIMAX", "LSTM"], "Naive", id='model_selection'))),
+        dbc.Row(dbc.Col(dcc.Dropdown(["Naive", "ARIMA", "SARIMAX"], "Naive", id='model_selection'))),
 
         dbc.Row(
             [
@@ -178,7 +184,7 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
             # Call specified model with years selected
             # e.g. bachelors_salary_ARIMA.pkl
-            loaded_model = pickle.load(open(join('models', f'{edu_column_name}_{model_selection}.pkl.'), 'rb'))
+            loaded_model = pickle.load(open(join(THIS_FOLDER, 'models', f'{edu_column_name}_{model_selection}.pkl.'), 'rb'))
 
             forecasts = round(loaded_model.forecast( forecast_year_slider))
 
