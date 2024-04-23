@@ -155,9 +155,9 @@ app.layout = html.Div(
 )
 def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
-    print (f'edu_checklist {edu_checklist}')
-    print (f'forecast_year_slider {forecast_year_slider}')
-    print (f'model_selection {model_selection}')
+    # print (f'edu_checklist {edu_checklist}')
+    # print (f'forecast_year_slider {forecast_year_slider}')
+    # print (f'model_selection {model_selection}')
 
     fig = px.line(df, x='year', y=df.columns[edu_checklist])
 
