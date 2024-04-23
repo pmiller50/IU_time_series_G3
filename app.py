@@ -13,7 +13,7 @@ pip install dash
 pip install dash_bootstrap_components
 
 then run:
-python dash_app.py
+python app.py
 
 '''
 
