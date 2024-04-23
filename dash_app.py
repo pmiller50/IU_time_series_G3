@@ -26,7 +26,7 @@ import numpy as np
 import pickle
 from os.path import join
 
-from statsmodels.tsa.arima.model import ARIMA
+# from statsmodels.tsa.arima.model import ARIMA
 
 df = pd.read_csv('data/salary_clean.csv')
 
