@@ -195,7 +195,7 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
             # Call specified model with years selected
             # e.g. bachelors_salary_ARIMA.pkl
-            loaded_model = pickle.load(open(join(current_directory,'models',f'{edu_column_name}_{model_selection}.pkl.'), 'rb'))
+            loaded_model = pickle.load(open(join(current_directory,'models',f'{edu_column_name}_{model_selection}.pkl'), 'rb'))
 
             forecasts = round(loaded_model.forecast( forecast_year_slider))
 
