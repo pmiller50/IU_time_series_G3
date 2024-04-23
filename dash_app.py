@@ -58,6 +58,8 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.LUX, dbc_css])
 
+server = app.server
+
 app.title = "Salaries by education level"
 
 
