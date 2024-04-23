@@ -25,6 +25,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from os.path import join
+from os import getcwd, walk
 
 # from statsmodels.tsa.arima.model import ARIMA
 
@@ -48,9 +49,19 @@ target_columns = ['high_school_salary', 'some_college_salary', 'bachelors_salary
 from pathlib import Path
 THIS_FOLDER = Path(__file__).parent.resolve()
 
-# print(f'THIS_FOLDER: {THIS_FOLDER}')
+print(f'THIS_FOLDER: {THIS_FOLDER}')
 # my_file = THIS_FOLDER / "myfile.txt"
 
+current_directory = getcwd()
+print("Current directory:", current_directory)
+
+
+for root, dirs, files in walk(current_directory):
+    for dir_name in dirs:
+        print('Directory:', join(root, dir_name))
+
+    for file_name in files:
+        print('File:', join(root, file_name))
     
 def naive_forecast(series, steps):
     '''
