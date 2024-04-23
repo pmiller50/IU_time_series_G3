@@ -46,22 +46,22 @@ target_columns = ['high_school_salary', 'some_college_salary', 'bachelors_salary
 #     with open(join("models", f"{edu_column}_ARIMA.pkl"), "rb") as f:
 #         arima_models[edu_column] = pickle.load(f)
 
-from pathlib import Path
-THIS_FOLDER = Path(__file__).parent.resolve()
+# from pathlib import Path
+# THIS_FOLDER = Path(__file__).parent.resolve()
 
-print(f'THIS_FOLDER: {THIS_FOLDER}')
+# print(f'THIS_FOLDER: {THIS_FOLDER}')
 # my_file = THIS_FOLDER / "myfile.txt"
 
 current_directory = getcwd()
 print("Current directory:", current_directory)
 
 
-for root, dirs, files in walk(current_directory):
-    for dir_name in dirs:
-        print('Directory:', join(root, dir_name))
+# for root, dirs, files in walk(current_directory):
+#     for dir_name in dirs:
+#         print('Directory:', join(root, dir_name))
 
-    for file_name in files:
-        print('File:', join(root, file_name))
+#     for file_name in files:
+#         print('File:', join(root, file_name))
     
 def naive_forecast(series, steps):
     '''
@@ -155,9 +155,9 @@ app.layout = html.Div(
 )
 def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
-    # print (f'edu_checklist {edu_checklist}')
-    # print (f'forecast_year_slider {forecast_year_slider}')
-    # print (f'model_selection {model_selection}')
+    print (f'edu_checklist {edu_checklist}')
+    print (f'forecast_year_slider {forecast_year_slider}')
+    print (f'model_selection {model_selection}')
 
     fig = px.line(df, x='year', y=df.columns[edu_checklist])
 
@@ -195,7 +195,7 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
 
             # Call specified model with years selected
             # e.g. bachelors_salary_ARIMA.pkl
-            loaded_model = pickle.load(open(f'models/{edu_column_name}_{model_selection}.pkl.', 'rb'))
+            loaded_model = pickle.load(open(join(current_directory,'models',f'{edu_column_name}_{model_selection}.pkl.'), 'rb'))
 
             forecasts = round(loaded_model.forecast( forecast_year_slider))
 
