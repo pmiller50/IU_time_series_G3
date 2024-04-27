@@ -36,20 +36,9 @@ df.sort_values(by='year', inplace=True)
 # Define names of target columns
 target_columns = ['high_school_salary', 'some_college_salary', 'bachelors_salary', 'adv_salary']
 
-# Load pickled models to a dictionary
-# This code isn't used at the moment. We load the models dynamically every time which is not efficient.
-# arima_models = {}
-
-# for edu_column in target_columns:
-
-#     with open(join("models", f"{edu_column}_ARIMA.pkl"), "rb") as f:
-#         arima_models[edu_column] = pickle.load(f)
 
 from pathlib import Path
 THIS_FOLDER = Path(__file__).parent.resolve()
-
-# print(f'THIS_FOLDER: {THIS_FOLDER}')
-# my_file = THIS_FOLDER / "myfile.txt"
 
     
 def naive_forecast(series, steps):
@@ -62,7 +51,7 @@ def naive_forecast(series, steps):
 # stylesheet with the .dbc class from dash-bootstrap-templates library
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.LUX, dbc_css])
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY, dbc_css])
 
 server = app.server
 
@@ -71,7 +60,7 @@ app.title = "Salaries by education level"
 
 app.layout = html.Div(
     [
-        dbc.Row(dbc.Col(html.H1(children='Indiana University Spring 2024 Group 3 Time series project', style={'textAlign':'center'}), width="auto")),
+        dbc.Row(dbc.Col(html.H1(children='Indiana University Spring 2024 Group 3 Time series project', style={'textAlign':'center','margin-left':'10px', 'margin-top':'7px', 'margin-right':'10px'}), width="auto")),
         dbc.Row(dbc.Col(html.P(
                 [
                     "Plot average salaries in the United States by education level attained. Data provided by the ",
@@ -80,10 +69,10 @@ app.layout = html.Div(
                     html.Br(), 
                     "Please choose a model to use for forecasting."
                 ]
-                ), width="auto")),
+                ), width="auto"), style = {'margin-left':'15px', 'margin-top':'7px', 'margin-right':'15px'}),
                 
 
-        dbc.Row(dbc.Col(dcc.Dropdown(["Naive", "ARIMA", "SARIMAX"], "Naive", id='model_selection'))),
+        dbc.Row(dbc.Col(dcc.Dropdown(["Naive", "ARIMA", "SARIMAX", "AR", "MA", ], "Naive", id='model_selection')), style = {'margin-left':'15px', 'margin-top':'7px', 'margin-right':'15px'}),
 
         dbc.Row(
             [
@@ -96,7 +85,7 @@ app.layout = html.Div(
                                                     {'plot_bgcolor': 'rgba(0, 0, 0, 0)',
                                                         'paper_bgcolor': 'rgba(0, 0, 0, 0)'})
                                         )
-                           ]
+                           ], style = {'margin-left':'15px', 'margin-top':'7px', 'margin-right':'15px'}
                        )       ,                                     
 
 
@@ -160,8 +149,6 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
         for edu_column_name in df.columns[edu_checklist].values:
             naive_forecast_values = naive_forecast(df[edu_column_name], forecast_year_slider)
 
-            # print(f'Naive forecast values: {naive_forecast_values}')
-
             # The dataframe has the latest year as the last row, so find the latest year as the starting point
             # to add new values
             last_year_in_data = df.iloc[-1]['year']
@@ -187,8 +174,6 @@ def update_graph(edu_checklist,forecast_year_slider, model_selection):
             loaded_model = pickle.load(open(join(THIS_FOLDER, 'models', f'{edu_column_name}_{model_selection}.pkl'), 'rb'))
 
             forecasts = round(loaded_model.forecast( forecast_year_slider))
-
-            # print(f'model_selection:{model_selection}, forecasts:{forecasts}')
 
             # Convert the forecasts index (which is Index of Timestamps) into a list of years as int
             forecast_years = [timestamp.year for timestamp in forecasts.index]
